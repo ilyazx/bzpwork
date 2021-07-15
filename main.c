@@ -185,7 +185,9 @@ bool lzmaCompress(Byte *dest, SizeT *destLen, const Byte *src, SizeT srcLen, s_b
 	//props.algo=1;
 	//props.numHashBytes=4;
 	lzma_spd=0;
-
+	/* To increase compression speed */
+	props.dictSize=srcLen;
+	
 	*(unsigned long long*)(dest+5)=srcLen;
 	curRes = LzmaEncode(dest + 13, destLen,
 	                    src, srcLen,
@@ -197,6 +199,8 @@ bool lzmaCompress(Byte *dest, SizeT *destLen, const Byte *src, SizeT srcLen, s_b
 		return(1);
 	}
 	*destLen+=13;
+	/* For bzpcmd format, dictSize */
+	*(unsigned int*)(dest+1)=0x1000000;
 	return(0);
 }
 
