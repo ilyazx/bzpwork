@@ -3,7 +3,7 @@
 
 #include <string.h>
 
-extern bool lzma_spd;
+extern bool lzma_sprd;
 
 /* #define SHOW_STAT */
 /* #define SHOW_STAT2 */
@@ -1797,7 +1797,7 @@ static SRes LzmaEnc_CodeOneBlock(CLzmaEnc *p, Bool useLimits, UInt32 maxPackSize
       curByte = *data;
       probs = LIT_PROBS(nowPos32, *(data - 1));
 	  	  
-	  if(lzma_spd)	  
+	  if(lzma_sprd)	  
 	  LitEnc_Encode(&p->rc, probs, curByte);	  
 	  else
 	  if (IsCharState(p->state))

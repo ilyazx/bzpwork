@@ -8,7 +8,7 @@
 #include "LZMA/LzmaDec.h"
 #include "LZMA/LzmaEnc.h"
 
-bool lzma_spd;
+bool lzma_sprd;
 FILE *logfile=0;
 
 enum e_action {
@@ -19,7 +19,7 @@ enum e_action {
 enum e_compression {
     CMP_UNKNOWN=-1,
     CMP_GZIP=0,
-    CMP_LZMA_SPD=1,
+    CMP_LZMA_SPRD=1,
     CMP_NONE=2,
     CMP_LZMA_86=3,
     CMP_LZMA=4
@@ -27,7 +27,7 @@ enum e_compression {
 
 const char *compression_string[]= {
 	"CMP_GZIP",
-	"CMP_LZMA_SPD",
+	"CMP_LZMA_SPRD",
 	"CMP_NONE",
 	"CMP_LZMA_86",
 	"CMP_LZMA"
@@ -111,7 +111,7 @@ unsigned int getCompressionType(unsigned char *data) {
 	if( ((data[0] == 0x5D) || (data[0] == 0x67)) && (data[1] == 0))
 		return(CMP_LZMA);
 	if((data[0] == 0x5A) && (data[1] == 0))
-		return(CMP_LZMA_SPD);
+		return(CMP_LZMA_SPRD);
 	if((data[0] == 0x1) && ((data[1] == 0x5D) || (data[1] == 0x67)))
 		return(CMP_LZMA_86);
 	if((data[0] == 0x1F) && (data[1] == 0x8B))
@@ -184,7 +184,7 @@ bool lzmaCompress(Byte *dest, SizeT *destLen, const Byte *src, SizeT srcLen, s_b
 	props.mc=32;
 	//props.algo=1;
 	//props.numHashBytes=4;
-	lzma_spd=0;
+	lzma_sprd=0;
 	/* To increase compression speed */
 	props.dictSize=srcLen;
 	
@@ -217,7 +217,7 @@ bool lzmaSpdCompress(Byte *dest, SizeT *destLen, const Byte *src, SizeT srcLen, 
 	props.level = bzpBlock->level;
 	props.fb=32;
 	props.mc=32;
-	lzma_spd=1;
+	lzma_sprd=1;
     /* To increase compression speed */
 	props.dictSize=srcLen;
 	
@@ -270,7 +270,7 @@ bool compressFileToFile(FILE *fbzp, char *dataFilePath, s_bzpBlockParam *bzpBloc
 		fread(fileBuf,1,srcLen,f);
 
 		switch((unsigned int)bzpBlock->cmp) {
-			case CMP_LZMA_SPD:
+			case CMP_LZMA_SPRD:
 				if(lzmaSpdCompress(tempBuf,&outSizeProcessed,fileBuf,srcLen,bzpBlock)) {
 					free(tempBuf);
 					free(fileBuf);
@@ -570,10 +570,10 @@ bool extractDataToFile(char *filePath, unsigned char *block_data, unsigned int p
 		inSizePure = pac_size*2;
 		//if(inSizePure > bytes_count)
 			//inSizePure = bytes_count;
-		lzma_spd=0;
+		lzma_sprd=0;
 		switch(compression_type) {
-			case CMP_LZMA_SPD:
-				lzma_spd=1;
+			case CMP_LZMA_SPRD:
+				lzma_sprd=1;
 			case CMP_LZMA:
 				res = LzmaDecode(dest, &unpacked_size, compressed_data + LZMA_PROPS_SIZE + 8, &inSizePure,
 				                 compressed_data, LZMA_PROPS_SIZE, LZMA_FINISH_END,
@@ -833,9 +833,9 @@ void print_usage() {
 	       "[-level level]			-	compression level, default 5\n"
 	       "[-resl level]			-	compression level for resources, override the -level option for resources.\n"
 	       "[-usrl level]			-	compression level for resources, override the -level option for user code.\n"
-	       "[-cmp compression]		- 	compression type:[lzmaspd], [lzma].\n"
+	       "[-cmp compression]		- 	compression type:[lzmasprd], [lzma].\n"
 		   "[gzip], [none], [lzma86] not yet implemented.\n"
-	       "Default [lzmaspd]\n"
+	       "Default [lzmasprd]\n"
 	       "[-rescmp <compression>]	-	compression type, override the -cmp option for resources\n"
 	       "[-usrcmp <compression>]	-	compression type, override the -cmp option for user code\n"
 	       "\n"
@@ -843,7 +843,7 @@ void print_usage() {
 	       "bzpwork stone.bin\n"
 	       "bzpwork stone.bin extracted\n"
 	       "bzpwork -pack new_stone.bin -srcfolder extracted\n"
-	       "bzpwork -pack new_stone.bin -srcfolder extracted -level 9 -usrl 5 -cmp lzmaspd\n");
+	       "bzpwork -pack new_stone.bin -srcfolder extracted -level 9 -usrl 5 -cmp lzmasprd\n");
 }
 
 int main(int argc, char ** argv)
@@ -887,8 +887,8 @@ int main(int argc, char ** argv)
 						i++;
 						if(!strcmp(argv[i],"lzma"))
 							params.cmp = CMP_LZMA;
-						else if(!strcmp(argv[i],"lzmaspd"))
-							params.cmp = CMP_LZMA_SPD;
+						else if(!strcmp(argv[i],"lzmasprd"))
+							params.cmp = CMP_LZMA_SPRD;
 						else if(!strcmp(argv[i],"gzip"))
 							params.cmp = CMP_GZIP;
 						else if(!strcmp(argv[i],"none"))
@@ -904,8 +904,8 @@ int main(int argc, char ** argv)
 						i++;
 						if(!strcmp(argv[i],"lzma"))
 							params.usrcmp = CMP_LZMA;
-						else if(!strcmp(argv[i],"lzmaspd"))
-							params.usrcmp = CMP_LZMA_SPD;
+						else if(!strcmp(argv[i],"lzmasprd"))
+							params.usrcmp = CMP_LZMA_SPRD;
 						else if(!strcmp(argv[i],"gzip"))
 							params.usrcmp = CMP_GZIP;
 						else if(!strcmp(argv[i],"none"))
@@ -921,8 +921,8 @@ int main(int argc, char ** argv)
 						i++;
 						if(!strcmp(argv[i],"lzma"))
 							params.rescmp = CMP_LZMA;
-						else if(!strcmp(argv[i],"lzmaspd"))
-							params.rescmp = CMP_LZMA_SPD;
+						else if(!strcmp(argv[i],"lzmasprd"))
+							params.rescmp = CMP_LZMA_SPRD;
 						else if(!strcmp(argv[i],"gzip"))
 							params.rescmp = CMP_GZIP;
 						else if(!strcmp(argv[i],"none"))
@@ -945,7 +945,7 @@ int main(int argc, char ** argv)
 	}
 
 	/* Normalize params */
-	if(params.cmp == CMP_UNKNOWN) params.cmp=CMP_LZMA_SPD;
+	if(params.cmp == CMP_UNKNOWN) params.cmp=CMP_LZMA_SPRD;
 	if(params.level > 9) params.level = 5;
 	if(params.respacsize == (unsigned int)-1)params.respacsize=4096;
 	if(params.usrpacsize == (unsigned int)-1)params.usrpacsize=4096;

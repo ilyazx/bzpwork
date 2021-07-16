@@ -17,9 +17,9 @@ options:
 [-level level]			-	compression level, default 5
 [-resl level]			-	compression level for resources, override the -level option for resources.
 [-usrl level]			-	compression level for resources, override the -level option for user code.
-[-cmp compression]		- 	compression type:[lzmaspd], [lzma].
+[-cmp compression]		- 	compression type:[lzmasprd], [lzma].
 [gzip], [none], [lzma86] not yet implemented.
-Default lzmaspd
+Default lzmasprd
 [-rescmp <compression>]	-	compression type, override the -cmp option for resources
 [-usrcmp <compression>]	-	compression type, override the -cmp option for user code
 
@@ -27,6 +27,6 @@ Examples:
 bzpwork stone.bin
 bzpwork stone.bin extracted
 bzpwork -pack new_stone.bin -srcfolder extracted
-bzpwork -pack new_stone.bin -srcfolder extracted -level 9 -usrl 5 -cmp lzmaspd
+bzpwork -pack new_stone.bin -srcfolder extracted -level 9 -usrl 5 -cmp lzmasprd
 
 
